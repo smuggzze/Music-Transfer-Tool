@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Transfer Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-music text-3xl"></i>
+                    <div>
+                        <h1 class="text-3xl font-bold">Music Transfer Tool</h1>
+                        <p class="text-blue-100">Transfer playlists between music platforms seamlessly</p>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex items-center space-x-4 text-blue-100">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure & Fast</span>
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Real-time Progress</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Platform Selection -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Source Platform -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-download text-2xl text-blue-600 mr-3"></i>
+                    <h2 class="text-xl font-semibold text-gray-800">Source Platform</h2>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Platform</label>
+                    <select id="sourcePlatform" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Choose a platform...</option>
+                    </select>
+                </div>
+
+                <div id="sourceCredentials" class="space-y-4 hidden">
+                    <!-- Credentials will be dynamically added here -->
+                </div>
+
+                <div id="sourcePlaylists" class="mt-6 hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Playlist</label>
+                    <select id="sourcePlaylist" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Loading playlists...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Destination Platform -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-upload text-2xl text-green-600 mr-3"></i>
+                    <h2 class="text-xl font-semibold text-gray-800">Destination Platform</h2>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Platform</label>
+                    <select id="destinationPlatform" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">Choose a platform...</option>
+                    </select>
+                </div>
+
+                <div id="destinationCredentials" class="space-y-4 hidden">
+                    <!-- Credentials will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Transfer Button -->
+        <div class="text-center mb-8">
+            <button id="transferBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <i class="fas fa-exchange-alt mr-2"></i>
+                Start Transfer
+            </button>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progressSection" class="bg-white rounded-lg shadow-lg p-6 hidden">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-spinner fa-spin text-2xl text-blue-600 mr-3"></i>
+                <h3 class="text-xl font-semibold text-gray-800">Transfer Progress</h3>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span id="progressText">Initializing...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div id="progressMessage" class="text-gray-700"></div>
+        </div>
+
+        <!-- Recent Transfers -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-8">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-history text-2xl text-gray-600 mr-3"></i>
+                <h3 class="text-xl font-semibold text-gray-800">Recent Transfers</h3>
+            </div>
+            <div id="transferHistory" class="space-y-3">
+                <div class="text-gray-500 text-center py-4">
+                    <i class="fas fa-info-circle text-2xl mb-2"></i>
+                    <p>No transfers yet. Start your first transfer above!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-300">Music Transfer Tool - Transfer your playlists between music platforms</p>
+            <div class="flex justify-center space-x-6 mt-4 text-gray-400">
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        class MusicTransferApp {
+            constructor() {
+                this.platforms = [];
+                this.currentTaskId = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadPlatforms();
+                this.setupEventListeners();
+            }
+
+            async loadPlatforms() {
+                try {
+                    const response = await fetch('/api/platforms');
+                    this.platforms = await response.json();
+                    this.populatePlatformSelects();
+                } catch (error) {
+                    console.error('Failed to load platforms:', error);
+                    this.showNotification('Failed to load platforms', 'error');
+                }
+            }
+
+            populatePlatformSelects() {
+                const sourceSelect = document.getElementById('sourcePlatform');
+                const destSelect = document.getElementById('destinationPlatform');
+                
+                // Clear existing options
+                sourceSelect.innerHTML = '<option value="">Choose a platform...</option>';
+                destSelect.innerHTML = '<option value="">Choose a platform...</option>';
+                
+                this.platforms.forEach(platform => {
+                    const sourceOption = document.createElement('option');
+                    sourceOption.value = platform.id;
+                    sourceOption.textContent = platform.name;
+                    sourceSelect.appendChild(sourceOption);
+                    
+                    const destOption = document.createElement('option');
+                    destOption.value = platform.id;
+                    destOption.textContent = platform.name;
+                    destSelect.appendChild(destOption);
+                });
+            }
+
+            setupEventListeners() {
+                document.getElementById('sourcePlatform').addEventListener('change', (e) => {
+                    this.handlePlatformChange(e.target.value, 'source');
+                });
+
+                document.getElementById('destinationPlatform').addEventListener('change', (e) => {
+                    this.handlePlatformChange(e.target.value, 'destination');
+                });
+
+                document.getElementById('sourcePlaylist').addEventListener('change', () => {
+                    this.updateTransferButton();
+                });
+
+                document.getElementById('transferBtn').addEventListener('click', () => {
+                    this.startTransfer();
+                });
+            }
+
+            handlePlatformChange(platformId, type) {
+                const platform = this.platforms.find(p => p.id === platformId);
+                const credentialsDiv = document.getElementById(`${type}Credentials`);
+                
+                if (platform && platform.requires_auth) {
+                    this.createCredentialFields(credentialsDiv, platform.auth_fields, type);
+                    credentialsDiv.classList.remove('hidden');
+                } else {
+                    credentialsDiv.classList.add('hidden');
+                }
+
+                if (type === 'source') {
+                    this.loadPlaylists(platformId);
+                }
+
+                this.updateTransferButton();
+            }
+
+            createCredentialFields(container, fields, type) {
+                container.innerHTML = '';
+                
+                fields.forEach(field => {
+                    const div = document.createElement('div');
+                    div.className = 'mb-4';
+                    
+                    const label = document.createElement('label');
+                    label.className = 'block text-sm font-medium text-gray-700 mb-2';
+                    label.textContent = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    
+                    const input = document.createElement('input');
+                    input.type = field.includes('secret') ? 'password' : 'text';
+                    input.className = 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500';
+                    input.id = `${type}_${field}`;
+                    
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    container.appendChild(div);
+                });
+            }
+
+            async loadPlaylists(platformId) {
+                const playlistsDiv = document.getElementById('sourcePlaylists');
+                const select = document.getElementById('sourcePlaylist');
+                
+                playlistsDiv.classList.add('hidden');
+                select.innerHTML = '<option value="">Loading playlists...</option>';
+                
+                try {
+                    const credentials = this.getCredentials('source');
+                    const response = await fetch('/api/playlists', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ platform: platformId, credentials })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    select.innerHTML = '<option value="">Select a playlist...</option>';
+                    data.playlists.forEach(playlist => {
+                        const option = document.createElement('option');
+                        option.value = playlist.id;
+                        option.textContent = `${playlist.name} (${playlist.track_count} tracks)`;
+                        select.appendChild(option);
+                    });
+                    
+                    playlistsDiv.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Failed to load playlists:', error);
+                    this.showNotification('Failed to load playlists: ' + error.message, 'error');
+                    select.innerHTML = '<option value="">Error loading playlists</option>';
+                }
+            }
+
+            getCredentials(type) {
+                const platformId = document.getElementById(`${type}Platform`).value;
+                const platform = this.platforms.find(p => p.id === platformId);
+                
+                if (!platform || !platform.requires_auth) {
+                    return {};
+                }
+                
+                const credentials = {};
+                platform.auth_fields.forEach(field => {
+                    const input = document.getElementById(`${type}_${field}`);
+                    if (input) {
+                        credentials[field] = input.value;
+                    }
+                });
+                
+                return credentials;
+            }
+
+            updateTransferButton() {
+                const sourcePlatform = document.getElementById('sourcePlatform').value;
+                const destPlatform = document.getElementById('destinationPlatform').value;
+                const playlist = document.getElementById('sourcePlaylist').value;
+                const button = document.getElementById('transferBtn');
+                
+                button.disabled = !sourcePlatform || !destPlatform || !playlist;
+            }
+
+            async startTransfer() {
+                const sourcePlatform = document.getElementById('sourcePlatform').value;
+                const destPlatform = document.getElementById('destinationPlatform').value;
+                const playlistId = document.getElementById('sourcePlaylist').value;
+                const sourceCredentials = this.getCredentials('source');
+                const destCredentials = this.getCredentials('destination');
+                
+                try {
+                    const response = await fetch('/api/transfer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            source_platform: sourcePlatform,
+                            destination_platform: destPlatform,
+                            playlist_id: playlistId,
+                            source_credentials: sourceCredentials,
+                            destination_credentials: destCredentials
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    this.currentTaskId = result.task_id;
+                    this.showProgressSection();
+                    this.monitorProgress();
+                    this.showNotification('Transfer started successfully!', 'success');
+                    
+                } catch (error) {
+                    console.error('Transfer failed:', error);
+                    this.showNotification('Transfer failed: ' + error.message, 'error');
+                }
+            }
+
+            showProgressSection() {
+                document.getElementById('progressSection').classList.remove('hidden');
+                document.getElementById('progressSection').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            async monitorProgress() {
+                if (!this.currentTaskId) return;
+                
+                const checkProgress = async () => {
+                    try {
+                        const response = await fetch(`/api/status/${this.currentTaskId}`);
+                        const status = await response.json();
+                        
+                        if (status.error) {
+                            throw new Error(status.error);
+                        }
+                        
+                        this.updateProgress(status);
+                        
+                        if (status.status === 'completed' || status.status === 'failed') {
+                            this.addToHistory(status);
+                            return;
+                        }
+                        
+                        setTimeout(checkProgress, 1000);
+                    } catch (error) {
+                        console.error('Failed to check progress:', error);
+                        this.showNotification('Failed to check progress', 'error');
+                    }
+                };
+                
+                checkProgress();
+            }
+
+            updateProgress(status) {
+                const progressBar = document.getElementById('progressBar');
+                const progressPercent = document.getElementById('progressPercent');
+                const progressText = document.getElementById('progressText');
+                const progressMessage = document.getElementById('progressMessage');
+                
+                progressBar.style.width = `${status.progress}%`;
+                progressPercent.textContent = `${status.progress}%`;
+                progressText.textContent = status.message;
+                progressMessage.textContent = status.message;
+                
+                if (status.status === 'completed') {
+                    progressBar.className = 'bg-green-500 h-3 rounded-full progress-bar';
+                    this.showNotification('Transfer completed successfully!', 'success');
+                } else if (status.status === 'failed') {
+                    progressBar.className = 'bg-red-500 h-3 rounded-full progress-bar';
+                    this.showNotification('Transfer failed!', 'error');
+                }
+            }
+
+            addToHistory(status) {
+                const history = document.getElementById('transferHistory');
+                const transferItem = document.createElement('div');
+                transferItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg fade-in';
+                
+                const icon = status.status === 'completed' ? 'fas fa-check-circle text-green-500' : 'fas fa-times-circle text-red-500';
+                const statusText = status.status === 'completed' ? 'Completed' : 'Failed';
+                
+                transferItem.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="${icon} mr-3"></i>
+                        <div>
+                            <div class="font-medium">Transfer ${statusText}</div>
+                            <div class="text-sm text-gray-500">${status.message}</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-400">${new Date().toLocaleTimeString()}</div>
+                `;
+                
+                if (history.querySelector('.text-gray-500')) {
+                    history.innerHTML = '';
+                }
+                
+                history.insertBefore(transferItem, history.firstChild);
+            }
+
+            showNotification(message, type) {
+                // Simple notification - you could enhance this with a proper notification library
+                const color = type === 'success' ? 'green' : 'red';
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                
+                // Create a simple toast notification
+                const toast = document.createElement('div');
+                toast.className = `fixed top-4 right-4 bg-${color}-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 5000);
+            }
+        }
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new MusicTransferApp();
+        });
+    </script>
+</body>
+</html> 
