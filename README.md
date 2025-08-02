@@ -2,7 +2,7 @@
 
 A powerful web application that allows you to transfer playlists between different music platforms seamlessly. Transfer your playlists from Spotify to YouTube Music, or between any supported platforms, regardless of playlist size.
 
-## 🎵 Features
+## Features
 
 - **Multi-Platform Support**: Transfer between Spotify, YouTube Music, Amazon Music, and more
 - **Large Playlist Support**: Handle playlists of any size with background processing
@@ -12,7 +12,7 @@ A powerful web application that allows you to transfer playlists between differe
 - **Background Processing**: Non-blocking transfers that don't freeze the interface
 - **Transfer History**: Keep track of your recent transfers
 
-## 🚀 Supported Platforms
+## Supported Platforms
 
 ### Currently Supported
 - **Spotify** - Full playlist import/export support
@@ -24,13 +24,13 @@ A powerful web application that allows you to transfer playlists between differe
 - Deezer
 - Tidal
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Python 3.8 or higher
 - pip (Python package installer)
 - Web browser
 
-## 🛠️ Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -53,7 +53,7 @@ A powerful web application that allows you to transfer playlists between differe
    AMAZON_CLIENT_SECRET=your_amazon_client_secret
    ```
 
-## 🔧 Setup Instructions
+## Setup Instructions
 
 ### Spotify Setup
 
@@ -88,7 +88,7 @@ A powerful web application that allows you to transfer playlists between differe
 
 YouTube Music doesn't require explicit API credentials for basic operations, but you may need to authenticate through the web interface.
 
-## 🚀 Running the Application
+## Running the Application
 
 1. **Start the server**
    ```bash
@@ -104,7 +104,7 @@ YouTube Music doesn't require explicit API credentials for basic operations, but
    - Select the playlist you want to transfer
    - Click "Start Transfer"
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### Basic Transfer
 
@@ -132,7 +132,7 @@ YouTube Music doesn't require explicit API credentials for basic operations, but
 - **Progress Tracking**: Real-time progress updates with detailed status messages
 - **Error Handling**: Comprehensive error handling with user-friendly messages
 
-## 🔒 Security
+## Security
 
 - Credentials are handled securely and not stored permanently
 - All API calls use HTTPS
@@ -196,7 +196,7 @@ To add support for a new platform:
        ]
    ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -227,7 +227,7 @@ export FLASK_ENV=development
 python app.py
 ```
 
-## 📝 API Documentation
+## API Documentation
 
 ### Endpoints
 
@@ -259,7 +259,7 @@ curl -X POST http://localhost:5000/api/transfer \
   }'
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -267,18 +267,18 @@ curl -X POST http://localhost:5000/api/transfer \
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Spotipy](https://spotipy.readthedocs.io/) - Spotify Web API wrapper
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) - YouTube Music API wrapper
 - [Flask](https://flask.palletsprojects.com/) - Web framework
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
 
-## 📞 Support
+## Support
 
 If you encounter any issues or have questions:
 
@@ -288,4 +288,4 @@ If you encounter any issues or have questions:
 
 ---
 
-**Happy transferring! 🎵**
+**Happy transferring!**
